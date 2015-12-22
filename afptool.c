@@ -166,14 +166,14 @@ unpack_fail:
 // pack functions
 
 struct pack_part {
-	char name[32];
-	char filename[60];
+	char name[MAX_NAME_LENGTH];
+	char *filename;
 	unsigned int nand_addr;
 	unsigned int nand_size;
 };
 
 struct partition {
-	char name[32];
+	char name[MAX_NAME_LENGTH];
 	unsigned int start;
 	unsigned int size;
 };
@@ -388,20 +388,29 @@ void append_package(const char *name, const char *path)
 	struct partition *p_part;
 	struct pack_part *p_pack = &package_image.packages[package_image.num_package];
 
-	strncpy(p_pack->name, name, sizeof(p_pack->name));
-	strncpy(p_pack->filename, path, sizeof(p_pack->filename));
+	// We don't want to use a hardcoded path length ...
+	p_pack->filename = malloc(strlen(path) + 1);
+	if (p_pack->filename != NULL) {
+		strncpy(p_pack->name, name, sizeof(p_pack->name));
+		// Be sure to have a terminating \0
+		p_pack->name[MAX_NAME_LENGTH - 1] = '\0';
 
-	p_part = find_partition_byname(name);
-	if (p_part)
-	{
-		p_pack->nand_addr = p_part->start;
-		p_pack->nand_size = p_part->size;
+		strcpy(p_pack->filename, path);
+
+		p_part = find_partition_byname(name);
+		if (p_part)
+		{
+			p_pack->nand_addr = p_part->start;
+			p_pack->nand_size = p_part->size;
+		} else {
+			p_pack->nand_addr = (unsigned int)-1;
+			p_pack->nand_size = 0;
+		}
+
+		package_image.num_package++;
 	} else {
-		p_pack->nand_addr = (unsigned int)-1;
-		p_pack->nand_size = 0;
+		printf("Ignored Package : %s (Unable to allocate enough memory (%u bytes) for path information\n", name, (unsigned int)(strlen(path)));
 	}
-
-	package_image.num_package++;
 }
 
 int get_packages(const char *fname)
@@ -559,16 +568,21 @@ int pack_update(const char* srcdir, const char* dstfile) {
 	fwrite(&header, sizeof(header), 1, fp);
 
 	for (i = 0; i < package_image.num_package; ++i) {
-		strcpy(header.parts[i].name, package_image.packages[i].name);
-		strcpy(header.parts[i].filename, package_image.packages[i].filename);
+		strncpy(header.parts[i].name, package_image.packages[i].name, MAX_NAME_LENGTH);
+		header.parts[i].name[MAX_NAME_LENGTH - 1] = '\0';
+
+		strncpy(header.parts[i].filename, package_image.packages[i].filename, MAX_UPDATE_FILENAME_LENGTH);
+		header.parts[i].filename[MAX_UPDATE_FILENAME_LENGTH - 1] = '\0';
+
 		header.parts[i].nand_addr = package_image.packages[i].nand_addr;
 		header.parts[i].nand_size = package_image.packages[i].nand_size;
 
 		if (strcmp(package_image.packages[i].filename, "SELF") == 0)
 			continue;
 
-		printf("Add file: %s\n", header.parts[i].filename);
-		import_package(fp, &header.parts[i], header.parts[i].filename);
+		// Don't use possible "shortened" filename
+		printf("Add file: %s\n", package_image.packages[i].filename);
+		import_package(fp, &header.parts[i], package_image.packages[i].filename);
 	}
 
 	memcpy(header.magic, RKAFP_MAGIC, sizeof(header.magic));
@@ -612,17 +626,26 @@ void usage(const char *appname) {
 }
 
 int main(int argc, char** argv) {
+	unsigned int i = 0;
 	if (argc < 3) {
 		usage(argv[0]);
 		return 1;
 	}
 
 	if (strcmp(argv[1], "-pack") == 0 && argc == 4) {
+		// Just be sure to have expected values in package_image
+		memset(&package_image, '\0', sizeof(package_image));
+
 		if (pack_update(argv[2], argv[3]) == 0) {
 			printf("Pack OK!\n");
 		} else {
 			printf("Pack failed\n");
 			return 1;
+		}
+
+		// Just be a good citizen and clean up afterwards
+		for (i = 0; package_image.packages[i].filename != NULL && i < 16; i++) {
+			free(package_image.packages[i].filename);
 		}
 	} else if (strcmp(argv[1], "-unpack") == 0 && argc == 4) {
 		if (unpack_update(argv[2], argv[3]) == 0) {

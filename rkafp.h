@@ -1,9 +1,12 @@
 #ifndef _RKAFP_H
 #define _RKAFP_H
 
+#define MAX_NAME_LENGTH            32
+#define MAX_UPDATE_FILENAME_LENGTH 60
+
 struct update_part {
-	char name[32];
-	char filename[60];
+	char name[MAX_NAME_LENGTH];
+	char filename[MAX_UPDATE_FILENAME_LENGTH];
 	unsigned int nand_size;
 	unsigned int pos;
 	unsigned int nand_addr;
