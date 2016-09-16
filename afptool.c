@@ -481,8 +481,10 @@ int import_package(FILE *ofp, struct update_part *pack, const char *path)
 
 	pack->pos = ftell(ofp);
 	ifp = fopen(path, "rb");
-	if (!ifp)
+	if (!ifp) {
+		printf("Can't open \"%s\"\n", path);
 		return -1;
+	}
 
 	if (strcmp(pack->name, "parameter") == 0)
 	{
@@ -582,7 +584,8 @@ int pack_update(const char* srcdir, const char* dstfile) {
 
 		// Don't use possible "shortened" filename
 		printf("Add file: %s\n", package_image.packages[i].filename);
-		import_package(fp, &header.parts[i], package_image.packages[i].filename);
+		if (import_package(fp, &header.parts[i], package_image.packages[i].filename))
+			return -1;
 	}
 
 	memcpy(header.magic, RKAFP_MAGIC, sizeof(header.magic));
