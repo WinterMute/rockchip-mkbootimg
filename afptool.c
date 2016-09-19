@@ -583,7 +583,8 @@ int pack_update(const char* srcdir, const char* dstfile) {
 			continue;
 
 		// Don't use possible "shortened" filename
-		printf("Add file: %s\n", package_image.packages[i].filename);
+		printf("Add file: %s [0x%08x@0x%08x]\n", package_image.packages[i].filename,
+			header.parts[i].nand_size, header.parts[i].nand_addr);
 		if (import_package(fp, &header.parts[i], package_image.packages[i].filename))
 			return -1;
 	}
