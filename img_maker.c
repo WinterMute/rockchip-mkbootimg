@@ -100,6 +100,8 @@ int pack_rom(unsigned int chiptype, const char *loader_filename, int majver, int
 		rom_header.code = 0x01060000;
 	}else if(chiptype == 0x33313241) {
 		rom_header.code = 0x01030000;
+	}else if(chiptype == 0x33333043) {
+		rom_header.code = 0x01060000;
 	}
 	nowtime = time(NULL);
 	localtime_r(&nowtime, &local_time);
@@ -195,9 +197,10 @@ void usage(const char *appname) {
 			"%s -rk3128 Loader.bin 4 0 4 rawimage.img rkimage.img \tRK3128 board\n"
 			"%s -rk32 Loader.bin 4 4 2 rawimage.img rkimage.img \tRK32 board\n"
 			"%s -rk3368 Loader.bin 5 0 0 rawimage.img rkimage.img \tRK3368 board\n"
+			"%s -rk3399 Loader.bin 7 1 2 rawimage.img rkimage.img \tRK3399 board\n"
 			"\n\n"
 			"Options:\n"
-			"[chiptype]:\n\t-rk29\n\t-rk30\n\t-rk31\n\t-rk3128\n\t-rk32\n\t-rk3368\n", p, p, p, p, p, p);
+			"[chiptype]:\n\t-rk29\n\t-rk30\n\t-rk31\n\t-rk3128\n\t-rk32\n\t-rk3368\n\t-rk3399\n", p, p, p, p, p, p);
 }
 
 int main(int argc, char **argv)
@@ -220,16 +223,20 @@ int main(int argc, char **argv)
 		}
 		else if (strcmp(argv[1], "-rk3128") == 0)
 		{
-			pack_rom(0x33313241, argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), argv[6], argv[7]);
+			ret = pack_rom(0x33313241, argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), argv[6], argv[7]);
 		}
 		else if (strcmp(argv[1], "-rk32") == 0)
 		{
 			ret = pack_rom(0x80, argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), argv[6], argv[7]);
 		}
 		else if (strcmp(argv[1], "-rk3368") == 0)
-                  {
-                    pack_rom(0x41, argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), argv[6], argv[7]);
-                  }
+		{
+			ret = pack_rom(0x41, argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), argv[6], argv[7]);
+		}
+		else if (strcmp(argv[1], "-rk3399") == 0)
+		{
+			ret = pack_rom(0x33333043, argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), argv[6], argv[7]);
+		}
 		else
 		{
 			usage(argv[0]);
