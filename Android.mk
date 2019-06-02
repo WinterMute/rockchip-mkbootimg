@@ -49,6 +49,14 @@ include $(BUILD_HOST_EXECUTABLE)
 
 
 include $(CLEAR_VARS)
+LOCAL_SRC_FILES := mkkrnlimg.c
+
+LOCAL_MODULE := rk_mkkrnlimg
+LOCAL_MODULE_HOST_OS := linux
+include $(BUILD_HOST_EXECUTABLE)
+
+
+include $(CLEAR_VARS)
 LOCAL_SRC_FILES := resource_tool.c
 
 LOCAL_MODULE := rk_resource_tool

@@ -3,5 +3,6 @@ img_maker
 img_unpack
 mkbootimg
 unmkbootimg
+mkkrnlimg
 resource_tool
 
