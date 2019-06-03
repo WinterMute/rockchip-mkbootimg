@@ -561,7 +561,7 @@ int pack_update(const char* srcdir, const char* dstfile) {
 	if (chdir(srcdir))
 		return -1;
 
-	if (parse_parameter("parameter"))
+	if (parse_parameter("parameter.txt"))
 		return -1;
 
 	if (get_packages("package-file"))
