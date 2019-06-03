@@ -292,7 +292,7 @@ int action_parse_key(char *key, char *value) {
 }
 
 int parse_parameter(const char *fname) {
-	char line[512], *startp, *endp;
+	char line[1024], *startp, *endp;
 	char *key, *value;
 	FILE *fp;
 
