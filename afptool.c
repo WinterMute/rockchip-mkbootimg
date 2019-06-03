@@ -248,22 +248,21 @@ int action_parse_key(char *key, char *value) {
 		sscanf(value, "%d.%d.%d", &a, &b, &c);
 		package_image.version = (a << 24) + (b << 16) + c;
 	} else if (strcmp(key, "MACHINE_MODEL") == 0) {
-		package_image.machine_model[sizeof(package_image.machine_model) - 1] =
-				0;
+		package_image.machine_model[sizeof(package_image.machine_model) - 1] = 0;
 		strncpy(package_image.machine_model, value,
-				sizeof(package_image.machine_model));
+				sizeof(package_image.machine_model) - 1);
 		if (package_image.machine_model[sizeof(package_image.machine_model) - 1])
 			return -1;
 	} else if (strcmp(key, "MACHINE_ID") == 0) {
 		package_image.machine_id[sizeof(package_image.machine_id) - 1] = 0;
 		strncpy(package_image.machine_id, value,
-				sizeof(package_image.machine_id));
+				sizeof(package_image.machine_id) - 1);
 		if (package_image.machine_id[sizeof(package_image.machine_id) - 1])
 			return -1;
 	} else if (strcmp(key, "MANUFACTURER") == 0) {
 		package_image.manufacturer[sizeof(package_image.manufacturer) - 1] = 0;
 		strncpy(package_image.manufacturer, value,
-				sizeof(package_image.manufacturer));
+				sizeof(package_image.manufacturer) - 1);
 		if (package_image.manufacturer[sizeof(package_image.manufacturer) - 1])
 			return -1;
 	} else if (strcmp(key, "CMDLINE") == 0) {
