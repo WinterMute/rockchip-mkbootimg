@@ -92,16 +92,20 @@ int pack_rom(unsigned int chiptype, const char *loader_filename, int majver, int
 
 	rom_header.chip = chiptype;
 	rom_header.version = (((majver) << 24) + ((minver) << 16) + (subver));
-	if(chiptype == 0x50){
-		rom_header.code = 0x01030000;
-	}else if(chiptype == 0x60) {
-		rom_header.code = 0x01050000;
-	}else if(chiptype == 0x70) {
-		rom_header.code = 0x01060000;
-	}else if(chiptype == 0x33313241) {
-		rom_header.code = 0x01030000;
-	}else if(chiptype == 0x33333043) {
-		rom_header.code = 0x01060000;
+	switch (chiptype) {
+		case 0x50:
+		case 0x33313241:
+			rom_header.code = 0x01030000;
+			break;
+		case 0x60:
+			rom_header.code = 0x01050000;
+			break;
+		case 0x70:
+		case 0x80:
+		case 0x41:
+		case 0x33333043:
+			rom_header.code = 0x01060000;
+			break;
 	}
 	nowtime = time(NULL);
 	localtime_r(&nowtime, &local_time);
@@ -142,7 +146,7 @@ int pack_rom(unsigned int chiptype, const char *loader_filename, int majver, int
 
 	if (rom_header.loader_length <  sizeof(loader_header))
 	{
-		fprintf(stderr, "invalid loader :\"\%s\"\n",  loader_filename);
+		fprintf(stderr, "invalid loader :\"%s\"\n",  loader_filename);
 		goto pack_fail;
 	}
 
@@ -150,7 +154,7 @@ int pack_rom(unsigned int chiptype, const char *loader_filename, int majver, int
 	rom_header.image_length = import_data(image_filename, &rkaf_header, sizeof(rkaf_header), fp);
 	if (rom_header.image_length < sizeof(rkaf_header))
 	{
-		fprintf(stderr, "invalid rom :\"\%s\"\n",  image_filename);
+		fprintf(stderr, "invalid rom :\"%s\"\n",  image_filename);
 		goto pack_fail;
 	}
 
@@ -196,11 +200,11 @@ void usage(const char *appname) {
 			"%s -rk31 Loader.bin 4 0 4 rawimage.img rkimage.img \tRK31 board\n"
 			"%s -rk3128 Loader.bin 4 0 4 rawimage.img rkimage.img \tRK3128 board\n"
 			"%s -rk32 Loader.bin 4 4 2 rawimage.img rkimage.img \tRK32 board\n"
-			"%s -rk3368 Loader.bin 5 0 0 rawimage.img rkimage.img \tRK3368 board\n"
+			"%s -rk33 Loader.bin 5 0 0 rawimage.img rkimage.img \tRK33 board\n"
 			"%s -rk3399 Loader.bin 7 1 2 rawimage.img rkimage.img \tRK3399 board\n"
 			"\n\n"
 			"Options:\n"
-			"[chiptype]:\n\t-rk29\n\t-rk30\n\t-rk31\n\t-rk3128\n\t-rk32\n\t-rk3368\n\t-rk3399\n", p, p, p, p, p, p);
+			"[chiptype]:\n\t-rk29\n\t-rk30\n\t-rk31\n\t-rk3128\n\t-rk32\n\t-rk3368\n\t-rk3399\n", p, p, p, p, p, p, p);
 }
 
 int main(int argc, char **argv)
@@ -225,11 +229,11 @@ int main(int argc, char **argv)
 		{
 			ret = pack_rom(0x33313241, argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), argv[6], argv[7]);
 		}
-		else if (strcmp(argv[1], "-rk32") == 0)
+		else if (strcmp(argv[1], "-rk32") == 0 || strcmp(argv[1], "-rk3288") == 0)
 		{
 			ret = pack_rom(0x80, argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), argv[6], argv[7]);
 		}
-		else if (strcmp(argv[1], "-rk3368") == 0)
+		else if (strcmp(argv[1], "-rk33") == 0)
 		{
 			ret = pack_rom(0x41, argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), argv[6], argv[7]);
 		}
