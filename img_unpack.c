@@ -59,7 +59,7 @@ int check_md5sum(FILE *fp, size_t length)
         md5_update(&md5_ctx, buf, readlen);
     }
 
-    md5_finish( &md5_ctx, buf);
+    md5_finish( &md5_ctx, md5sum);
 
     if (32 != fread(buf, 1, 32, fp))
         return -1;
