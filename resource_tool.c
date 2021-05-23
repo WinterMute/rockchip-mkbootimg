@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include "resource_tool.h"
+#include "compat.h"
 
 static const char* PROG = NULL;
 static bool g_debug = false;
@@ -161,7 +162,7 @@ static bool mkdirs(char* path) {
         buf[pos - path] = '\0';
         tmp = pos + 1;
         if (g_debug) printf("mkdir:%s\n", buf);
-        if (!mkdir(buf, 0)) {
+        if (!make_directory(buf, 0)) {
             ret = false;
         }
     }
@@ -236,7 +237,7 @@ static int unpack_image(const char* dir) {
         unpack_dir[strlen(unpack_dir) - 1] = '\0';
     }
 
-    mkdir(unpack_dir, 0755);
+    make_directory(unpack_dir, 0755);
     image_file = fopen(image_path, "rb");
     if (!image_file) {
         fprintf(stderr, "Failed to open:%s\n", image_path);

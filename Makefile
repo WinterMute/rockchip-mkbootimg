@@ -1,6 +1,6 @@
 CC      ?= gcc
-CFLAGS  ?= -O2 -Wall -Wextra
-LDFLAGS ?= 
+CFLAGS  ?= -O2 -Wall -Wextra -D_GNU_SOURCE -D_POSIX_C_SOURCE
+LDFLAGS ?=
 PREFIX  ?= usr/local
 
 TARGETS = afptool$(EXEEXT) img_maker$(EXEEXT) img_unpack$(EXEEXT) mkbootimg$(EXEEXT) unmkbootimg$(EXEEXT) mkkrnlimg$(EXEEXT) resource_tool$(EXEEXT)
@@ -24,7 +24,7 @@ mkbootimg$(EXEEXT): mkbootimg.o sha1.o
 unmkbootimg$(EXEEXT): unmkbootimg.o sha1.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-%: %.o
+%$(EXEEXT): %.o
 	 $(CC) -o $@ $< $(LDFLAGS)
 
 

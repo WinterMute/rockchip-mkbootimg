@@ -2,10 +2,12 @@
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/stat.h>
 #include <time.h>
 #include "rkrom.h"
 #include "md5.h"
+#include "compat.h"
 
 int export_data(const char *filename, unsigned int offset, unsigned int length, FILE *fp)
 {
@@ -116,7 +118,7 @@ int unpack_rom(const char* filepath, const char* dstpath, int createpath)
     }
     printf("OK\n");
 
-    if (createpath && mkdir(dstpath, S_IRWXU | S_IRWXG | S_IRWXO)) {
+    if (createpath && make_directory(dstpath, S_IRWXU | S_IRWXG | S_IRWXO)) {
         fprintf(stderr, "Create dest path error.%s(%d)", strerror (errno), errno);
         goto unpack_fail;
     }

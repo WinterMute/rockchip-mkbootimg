@@ -13,6 +13,8 @@
 #include "rkcrc.h"
 #include "rkafp.h"
 
+#include "compat.h"
+
 unsigned int filestream_crc(FILE *fs, size_t stream_len)
 {
 	char buffer[1024];
@@ -39,7 +41,7 @@ int create_dir(char *dir) {
 	char *sep = dir;
 	while ((sep = strchr(sep, '/')) != NULL) {
 		*sep = '\0';
-		if (mkdir(dir, 0755) != 0 && errno != EEXIST) {
+		if (make_directory(dir, 0755) != 0 && errno != EEXIST) {
 			printf("Can't create directory: %s\n", dir);
 			return -1;
 		}
