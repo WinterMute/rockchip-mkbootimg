@@ -1,3 +1,7 @@
+#ifdef __MINGW32__
+#define _POSIX_THREAD_SAFE_FUNCTIONS
+#endif
+
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
