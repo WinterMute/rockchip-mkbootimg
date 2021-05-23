@@ -6,4 +6,4 @@ unmkbootimg
 mkkrnlimg
 resource_tool
 *.o
-
+*.exe
