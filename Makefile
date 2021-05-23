@@ -9,6 +9,15 @@ DEPS    = Makefile rkafp.h rkcrc.h
 
 all: $(TARGETS)
 
+afptool.o: compat.h
+img_unpack.o: compat.h md5.h
+img_maker.o: md5.h
+resource_tool.o: compat.h
+mkbootimg.o: sha1.h
+unmkbootimg.o: sha1.h
+sha1.o: sha1.h
+md5.o: md5.h
+
 %.o: %.c $(COMMON) $(DEPS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
