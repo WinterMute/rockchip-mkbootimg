@@ -1,11 +1,11 @@
 #include <errno.h>
 #include <limits.h>
-#include <openssl/md5.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>
 #include "rkrom.h"
+#include "md5.h"
 
 int export_data(const char *filename, unsigned int offset, unsigned int length, FILE *fp)
 {
@@ -41,33 +41,33 @@ export_end:
 
 int check_md5sum(FILE *fp, size_t length)
 {
-    char buf[1024];
+    unsigned char buf[1024];
     unsigned char md5sum[16];
-    MD5_CTX md5_ctx;
+    md5_context md5_ctx;
     int i;
 
     fseek(fp, 0, SEEK_SET);
 
-    MD5_Init(&md5_ctx);
+    md5_starts(&md5_ctx);
     while (length > 0)
     {
         int readlen = length < sizeof(buf) ? length : sizeof(buf);
         readlen = fread(buf, 1, readlen, fp);
         length -= readlen;
-        MD5_Update(&md5_ctx, buf, readlen);
+        md5_update(&md5_ctx, buf, readlen);
     }
 
-    MD5_Final(md5sum, &md5_ctx);
+    md5_finish( &md5_ctx, buf);
 
     if (32 != fread(buf, 1, 32, fp))
         return -1;
 
     for (i = 0; i < 16; ++i)
     {
-        sprintf(buf + 32 + i * 2, "%02x", md5sum[i]);
+        sprintf((char*)buf + 32 + i * 2, "%02x", md5sum[i]);
     }
 
-    if (strncasecmp(buf, buf + 32, 32) == 0)
+    if (strncasecmp((char*)buf, (char*)buf + 32, 32) == 0)
         return 0;
 
     return -1;

@@ -1,6 +1,6 @@
 CC      ?= gcc
 CFLAGS  ?= -O2 -Wall -Wextra
-LDFLAGS ?= -lcrypto
+LDFLAGS ?= 
 PREFIX  ?= usr/local
 
 TARGETS = afptool img_maker img_unpack mkbootimg unmkbootimg mkkrnlimg resource_tool
@@ -9,8 +9,18 @@ DEPS    = Makefile rkafp.h rkcrc.h
 
 all: $(TARGETS)
 
-%: %.c $(COMMON) $(DEPS)
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+%.o: %.c $(COMMON) $(DEPS)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+img_maker: img_maker.o md5.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+img_unpack: img_unpack.o md5.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+%: %.o
+	 $(CC) -o $@ $< $(LDFLAGS)
+
 
 install: $(TARGETS)
 	install -d -m 0755 $(DESTDIR)/$(PREFIX)/bin
@@ -20,7 +30,7 @@ install: $(TARGETS)
 .PHONY: clean uninstall
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) *.o
 
 uninstall:
 	cd $(DESTDIR)/$(PREFIX)/bin && rm -f $(TARGETS)

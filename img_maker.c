@@ -4,7 +4,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <time.h>
-#include <openssl/md5.h>
+#include "md5.h"
 #include "rkrom.h"
 #include "rkafp.h"
 
@@ -48,11 +48,11 @@ import_end:
 
 void append_md5sum(FILE *fp)
 {
-	MD5_CTX md5_ctx;
+	md5_context md5_ctx;
 	unsigned char buffer[1024];
 	int i;
 
-	MD5_Init(&md5_ctx);
+	md5_starts(&md5_ctx);
 	fseek(fp, 0, SEEK_SET);
 
 	while (1)
@@ -60,14 +60,14 @@ void append_md5sum(FILE *fp)
 		int len = fread(buffer, 1, sizeof(buffer), fp);
 		if (len)
 		{
-			MD5_Update(&md5_ctx, buffer, len);
+			md5_update(&md5_ctx, buffer, len);
 		}
 
 		if (len != sizeof(buffer))
 			break;
 	}
 
-	MD5_Final(buffer, &md5_ctx);
+	md5_finish( &md5_ctx, buffer);
 
 	for (i = 0; i < 16; ++i)
 	{
