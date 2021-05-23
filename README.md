@@ -1,8 +1,4 @@
 # Installation
-
-Compilation needs OpenSSL crypto library:
-
-    sudo apt-get install libssl-dev
     
 Build and install:
 
