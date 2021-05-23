@@ -18,6 +18,12 @@ img_maker: img_maker.o md5.o
 img_unpack: img_unpack.o md5.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+mkbootimg: mkbootimg.o sha1.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+unmkbootimg: unmkbootimg.o sha1.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 %: %.o
 	 $(CC) -o $@ $< $(LDFLAGS)
 

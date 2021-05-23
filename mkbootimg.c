@@ -22,7 +22,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include <openssl/sha.h>
+#include "sha1.h"
 #include "bootimg.h"
 
 static void *load_file(const char *fn, unsigned *_sz)
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
     char *board = "";
     unsigned pagesize = 16384;
     int fd;
-    SHA_CTX ctx;
+    sha1_context ctx;
     unsigned char sha[SHA_DIGEST_LENGTH];
 
     argc--;
@@ -229,16 +229,16 @@ int main(int argc, char **argv)
     /* put a hash of the contents in the header so boot images can be
      * differentiated based on their first 2k.
      */
-    SHA1_Init(&ctx);
-    SHA1_Update(&ctx, kernel_data, hdr.kernel_size);
-    SHA1_Update(&ctx, &hdr.kernel_size, sizeof(hdr.kernel_size));
-    SHA1_Update(&ctx, ramdisk_data, hdr.ramdisk_size);
-    SHA1_Update(&ctx, &hdr.ramdisk_size, sizeof(hdr.ramdisk_size));
-    SHA1_Update(&ctx, second_data, hdr.second_size);
-    SHA1_Update(&ctx, &hdr.second_size, sizeof(hdr.second_size));
+    sha1_starts(&ctx);
+    sha1_update(&ctx, kernel_data, hdr.kernel_size);
+    sha1_update(&ctx, (unsigned char*)&hdr.kernel_size, sizeof(hdr.kernel_size));
+    sha1_update(&ctx, ramdisk_data, hdr.ramdisk_size);
+    sha1_update(&ctx, (unsigned char*)&hdr.ramdisk_size, sizeof(hdr.ramdisk_size));
+    sha1_update(&ctx, second_data, hdr.second_size);
+    sha1_update(&ctx, (unsigned char*)&hdr.second_size, sizeof(hdr.second_size));
     /* tags_addr, page_size, unused[2], name[], and cmdline[] */
-    SHA1_Update(&ctx, &hdr.tags_addr, 4 + 4 + 4 + 4 + 16 + 512);
-    SHA1_Final(sha, &ctx);
+    sha1_update(&ctx, (unsigned char*)&hdr.tags_addr, 4 + 4 + 4 + 4 + 16 + 512);
+    sha1_finish(&ctx, sha);
     memcpy(hdr.id, sha,
            SHA_DIGEST_LENGTH > sizeof(hdr.id) ? sizeof(hdr.id) : SHA_DIGEST_LENGTH);
 
