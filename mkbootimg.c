@@ -82,7 +82,7 @@ static unsigned char padding[16384] = { 0, };
 int write_padding(int fd, unsigned pagesize, unsigned itemsize)
 {
     unsigned pagemask = pagesize - 1;
-    ssize_t count;
+    size_t count;
 
     if((itemsize & pagemask) == 0) {
         return 0;
