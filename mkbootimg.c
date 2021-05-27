@@ -28,7 +28,7 @@
 static void *load_file(const char *fn, unsigned *_sz)
 {
     char *data;
-    int sz;
+    off_t sz;
     int fd;
 
     data = 0;

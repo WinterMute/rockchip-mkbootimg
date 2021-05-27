@@ -1,5 +1,5 @@
 CC      ?= gcc
-CFLAGS  ?= -O2 -Wall -Wextra -D_GNU_SOURCE
+CFLAGS  ?= -O2 -Wall -Wextra -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64
 LDFLAGS ?=
 PREFIX  ?= usr/local
 
