@@ -34,7 +34,7 @@ unmkbootimg$(EXEEXT): unmkbootimg.o sha1.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 %$(EXEEXT): %.o
-	 $(CC) -o $@ $< $(LDFLAGS)
+	 $(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 
 install: $(TARGETS)
